@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
 
-entity decrementador_bcd
+entity decrementador_bcd is
 	port (
 		clk, load, enable, rst : in std_logic;
 		ate5 : in std_logic := '0';

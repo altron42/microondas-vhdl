@@ -1,7 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity Temporizador
+entity Temporizador is
    -- divisor de clock faz 1 Hz (1 pulso) a cada 25 Mhz de clk_t
    generic(divisor_clk_t: integer := 25000000);
    port (
@@ -40,7 +40,7 @@ begin
 				count_t := 0;
 			end if;
 		end if;
-	end process
+	end process;
 
 	-- Unidade logica
    fp_buffer <= carry_0 and carry_1 and carry_2 and carry_3;	
@@ -49,7 +49,7 @@ begin
 	enable_2 <= carry_1 and enable_1;
 	enable_3 <= carry_2 and enable_2;
 	op_t <= enable_0;
-	fp_t < fp_buffer;
+	fp_t <= fp_buffer;
 	
    -- port map dos decrementadores bcd
    decrementador_0 : decrementador_bcd port map
