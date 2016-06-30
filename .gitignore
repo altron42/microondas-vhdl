@@ -1,0 +1,9 @@
+# Ignorar tudo
+*
+
+# Exceto esses arquivos
+!*.vhd
+!.gitignore
+
+# Ignorar subdiretorios também
+!*/
