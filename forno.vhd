@@ -73,9 +73,12 @@ architecture microondas of forno is
 begin
    divisorFreq_LCDDriver: Ripple_Clock port map
 	   (CLOCK, fio_resetar_lcd_driver);
+		
 	compControlador_LCD: Controlador_LCD port map
 		(CLOCK, fio_selecionaChar, fio_endereco_lcd, fio_caracter_lcd);
+		
 	compLCDDriver: LCD_Driver port map
 		(CLOCK, fio_resetar_lcd_driver, fio_selecionaChar, '1', fio_endereco_lcd(3 downto 0), fio_endereco_lcd(5 downto 4),
 	   fio_caracter_lcd, x"00", LCD_RS, LCD_RW, LCD_E, LCD_DADOS);
+	
 end microondas;
