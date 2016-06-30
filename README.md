@@ -9,10 +9,10 @@ Os componentes principais são aqueles que compõem a lógica digital do sistema
 
 Lista de componentes principais que já foram implementados ou que estão sendo implementados no momento:
 
-- [ ] Decodificador 1
-- [x] Temporizador
+- [ ] Decodificador 1 (programação automática)
+- [x] Temporizador de minutos e segundos
 - [ ] Controlador
-- [ ] Decodificador 2
+- [ ] Decodificador 2 (programação incremental)
 - [ ] ULA
 - [ ] Controlador do teclado
 - [ ] Registrador Controlador do Teclado
@@ -25,5 +25,5 @@ São utilizados pelos componentes principais
 
 Lista de componentes secundários que já foram implentados ou que ainda estão sendo trabalhados no momento:
 
-- [x] Decrementador síncrono BCD8421
-- [x] Divisor de frequencia
+- [x] Decrementador BCD8421
+- [x] Divisor de frequência
