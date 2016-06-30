@@ -17,7 +17,7 @@ entity LCD_Driver is
 		fsd_E					   : Buffer std_logic;
 		fsd_Dados				: out std_logic_vector(7 downto 0)
 	);
-end Lcd_Driver;
+end LCD_Driver;
 
 architecture LCD_ME of LCD_Driver is
 	type fsd_estado is (functionSet1, functionSet2, functionSet3, functionSet4,
