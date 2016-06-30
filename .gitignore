@@ -4,6 +4,7 @@
 # Exceto esses arquivos
 !*.vhd
 !.gitignore
+!README.md
 
 # Ignorar subdiretorios também
 !*/
