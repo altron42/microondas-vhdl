@@ -10,7 +10,7 @@ Os componentes principais são aqueles que compõem a lógica digital do sistema
 Lista de componentes principais que já foram implementados ou que estão sendo implementados no momento:
 
 - [ ] Decodificador 1
-- [ ] Temporizador
+- [x] Temporizador
 - [ ] Controlador
 - [ ] Decodificador 2
 - [ ] ULA
