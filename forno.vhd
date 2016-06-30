@@ -14,22 +14,14 @@ entity forno is
 end forno;
 
 architecture microondas of forno is
-
-   component Decrementador
-	   port (
-		   clk, load, enable, rst : in std_logic;
-			ate5 : in std_logic;
-			carry : out std_logic;
-			din : in std_logic_vector (3 downto 0);
-			dout : out std_logic_vector (3 downto 0)
-		);
-	end component;
 	
 	component Temporizador
+	   generic(divisor_clk_t: integer := 25000000);
 	   port (
 		   clk_t, ce_t, wr_t, rst_all : in std_logic;
 			t_in : in std_logic_vector (15 downto 0);
 			t_out : out std_logic_vector (15 downto 0);
+			bcd_clk : buffer std_logic;
 			op_t, fp_t : out std_logic
 		);
 	end component;
@@ -73,6 +65,14 @@ architecture microondas of forno is
 begin
    divisorFreq_LCDDriver: Ripple_Clock port map
 	   (CLOCK, fio_resetar_lcd_driver);
+		
+	compTemporizador : Temporizador port map
+	   (CLOCK,
+		clk_t, ce_t, wr_t, rst_all : in std_logic;
+			t_in : in std_logic_vector (15 downto 0);
+			t_out : out std_logic_vector (15 downto 0);
+			bcd_clk : buffer std_logic;
+			op_t, fp_t : out std_logic
 		
 	compControlador_LCD: Controlador_LCD port map
 		(CLOCK, fio_selecionaChar, fio_endereco_lcd, fio_caracter_lcd);
