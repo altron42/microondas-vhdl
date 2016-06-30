@@ -17,15 +17,25 @@ architecture temporizador_MS of Temporizador is
 		   clk, load, enable, rst, ate5 : in std_logic;
 			din : in std_logic_vector (3 downto 0);
 			dout : out std_logic_vector (3 downto 0);
-			carry : out std_logic;
+			carry : out std_logic
 		);
 	end component;
    
 	signal enable_0, enable_1, enable_2, enable_3 : std_logic;
 	signal carry_0, carry_1, carry_2, carry_3 : std_logic;
+	signal fp_buffer : std_logic;
+
 begin
-
-
+   fp_buffer <= carry_0 and carry_1 and carry_2 and carry_3;
+	
+   enable_0 <= ce_t and not fp_buffer;
+	enable_1 <= carry_0 and enable_0;
+	enable_2 <= carry_1 and enable_1;
+	enable_3 <= carry_2 and enable_2;
+	
+	op_t <= enable_0;
+	fp_t < fp_buffer;
+	
    -- port map dos decrementadores bcd
    decrementador_0 : decrementador_bcd port map
 	   (clk_t, wr_t, enable_0, rst_all, '0',
