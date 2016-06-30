@@ -15,16 +15,15 @@ begin
 	process(clk_in)
 		variable count: natural := 0;
 	begin
+	   if count = 0 then
+			clk_out <= '1';
+		elsif count = fator/2 then
+			clk_out <= '0';
+		end if;
 		if rising_edge(clk_in) then
-		   if count = fator/2 then
-			   clk_out <= 0;
-			elsif count = 0 then
-			   clk_out <=1;
-			end if;
-		   if count < fator then
-			   count := count + 1;
-			else
-			   count := 0;
+			count := count + 1;
+			if count >= fator then
+				count := 0;
 			end if;
 		end if;
 	end process;
