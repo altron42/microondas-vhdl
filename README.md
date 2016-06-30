@@ -25,5 +25,5 @@ São utilizados pelos componentes principais
 
 Lista de componentes secundários que já foram implentados ou que ainda estão sendo trabalhados no momento:
 
-- [ ] Decrementador síncrono BCD8421
+- [x] Decrementador síncrono BCD8421
 - [x] Divisor de frequencia
