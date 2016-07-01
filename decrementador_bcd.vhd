@@ -6,7 +6,7 @@ use ieee.numeric_std.all;
 entity decrementador_bcd is
 	port (
 		clk, load, enable, rst : in std_logic;
-		ate5 : in std_logic := '0';
+		estouro : in std_logic := '0';
 		din : in std_logic_vector (3 downto 0);
 		dout : out std_logic_vector (3 downto 0);
 		carry : out std_logic
@@ -24,7 +24,7 @@ begin
 	   elsif rising_edge(clk) and enable = '1' then
 		   count := count - "01";
 			if count >= "1010" then
-			   if ate5 = '1' then count := "0101"; else count := "1001"; end if;
+			   if estouro = '1' then count := "0101"; else count := "1001"; end if;
 			end if;
 		end if;
 		if count = "0000" then carry <= '1'; else carry <= '0'; end if;
