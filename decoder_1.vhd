@@ -33,7 +33,7 @@ begin
 		   if rd_dec1 = '1' then
 		      bus_dec1 <= registrador_tempo;
 		   else
-			   bus_dec1 <= (others => 'Z');
+			   bus_dec1 <= (others => 'Z'); -- volta para estado de alta impedancia
 			end if;
 		end if;
 	end process;
