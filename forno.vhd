@@ -10,8 +10,10 @@ entity forno is
 		BT_PIP, BT_PIZ, BT_LAS : in std_logic;
 		SW_SENPORTA : in std_logic;
 		LED_ESPERA, LED_OPERANDO : out std_logic;
+		TEMPORIZADOR_TESTE : out std_logic_vector (bus_max_width downto 0);
 		LCD_DADOS : out std_logic_vector (7 downto 0);
-		LCD_RS, LCD_RW, LCD_E : out std_logic
+		LCD_RS, LCD_RW, LCD_E : out std_logic;
+		t_clk_out : out std_logic
 	);
 end forno;
 
@@ -40,7 +42,6 @@ architecture microondas of forno is
 	end component;
 	
 	component Temporizador
-	   generic(divisor_clk_t: integer := 25000000);
 	   port (
 		   clk_t, ce_t, wr_t, rst_all : in std_logic;
 			bus_t_in : in std_logic_vector (15 downto 0);
@@ -99,20 +100,28 @@ architecture microondas of forno is
 	-- sinal de controle assincrono para resetar todos os componentes
 	signal fio_rst_all : std_logic;
 	
+	-- saida do clock dividido
+	signal CLOCK_SYS_OUT : std_logic;
+	
 	signal fio_saida_t : std_logic_vector (bus_max_width downto 0);
 	
 begin
+   divisorFreq_CLOCK: Ripple_Clock generic map
+	   (fator => 50000000)
+	port map
+	   (CLOCK, CLOCK_SYS_OUT);
+
    divisorFreq_LCDDriver: Ripple_Clock port map
 	   (CLOCK, fio_resetar_lcd_driver);
 		
 	compControlador : Controlador port map (
-	   clk => CLOCK,
+	   clk => CLOCK_SYS_OUT,
 		bt_start => BT_START,
 		bt_stop => BT_STOP,
 		bt_cancel => BT_CANCEL,
 		sw_sp => SW_SENPORTA,
 		en_wait => LED_ESPERA,
-		en_lamp => LED_OPERANDO,
+		en_lamp => LED_OPERANDO, -- LED OPERANDO
 		ready_dec1 => fio_ready_dec1,
 		rd_dec1 => fio_rd_dec1,
 		op_t => fio_op_t,
@@ -122,31 +131,32 @@ begin
 		rst_all => fio_rst_all );
 		
 	compDecoder_1 : decoder_1 port map (
-	   clk => CLOCK,
+	   clk => CLOCK_SYS_OUT,
 	   bt_pip => BT_PIP,
 		bt_piz => BT_PIZ,
 		bt_las => BT_LAS,
-		ready_dec1 => fio_ready_dec1,
+		ready_dec1 => fio_ready_dec1, -- fio_ready_dec1
 		rd_dec1 => fio_rd_dec1,
 		bus_dec1 => barramento
 	);
 		
 	compTemporizador : Temporizador port map (
-	   clk_t => CLOCK,
+	   clk_t => CLOCK_SYS_OUT,
 	   ce_t => fio_ce_t,
 		wr_t => fio_wr_t,
 		rst_all => fio_rst_all,
 		bus_t_in => barramento,
-		t_out => fio_saida_t, -- falta ligar essa saida em algum lugar (provavelmente controlaodor do LCD e depois ULA)
+		t_out => TEMPORIZADOR_TESTE, -- falta ligar essa saida em algum lugar (provavelmente controlaodor do LCD e depois ULA)
 		op_t => fio_op_t,
 		fp_t => fio_fp_t
 	);
+	
 		
 	compControlador_LCD: Controlador_LCD port map
-		(CLOCK, fio_selecionaChar, fio_endereco_lcd, fio_caracter_lcd);
+		(CLOCK_SYS_OUT, fio_selecionaChar, fio_endereco_lcd, fio_caracter_lcd);
 		
 	compLCD_Driver: LCD_Driver port map
-		(CLOCK, fio_resetar_lcd_driver, fio_selecionaChar, '1', fio_endereco_lcd(3 downto 0), fio_endereco_lcd(5 downto 4),
+		(CLOCK_SYS_OUT, fio_resetar_lcd_driver, fio_selecionaChar, '1', fio_endereco_lcd(3 downto 0), fio_endereco_lcd(5 downto 4),
 	   fio_caracter_lcd, x"00", LCD_RS, LCD_RW, LCD_E, LCD_DADOS);
 	
 end microondas;

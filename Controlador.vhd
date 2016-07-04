@@ -46,19 +46,19 @@ begin
 			when pronto => -- Estado em pronto
 			   rd_dec1 <= '0';
 				wr_t <= '0';
-				if bt_start = '0' and sw_sp = '1' then
+				if bt_start = '0' and sw_sp = '0' then
 				   ctrl_sto_prox <= rodando;
 				end if;
 			when rodando => -- Estado em rodando
 			   ce_t <= '1';
-			   if bt_stop = '0' or sw_sp = '0' then
+			   if bt_stop = '0' or sw_sp = '1' then
 				   ce_t <= '0';
 				   ctrl_sto_prox <= parado;
 				elsif fp_t = '1' then
 				   ctrl_sto_prox <= espera;
 				end if;
 			when parado => -- Estado em parado
-			   if bt_start = '0' then
+			   if bt_start = '0' and sw_sp = '0' then
 				   ctrl_sto_prox <= rodando;
 				end if;
 			when others => ctrl_sto_prox <= espera; -- condicao para voltar para o estado de espera

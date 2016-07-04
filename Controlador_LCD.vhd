@@ -16,13 +16,12 @@ architecture controle_lcd of Controlador_LCD is
 begin
 	process(clk_lcd)
 	   -- tamanho da string
-		constant len: natural := 63;
-		variable count: natural range 0 to len := 0;
 		-- Guia de tamanho das linhas '                    ' '                    ' '                    ' '                    '
-		constant nome: string := "Primeira linha viadoSegunda linha gay *Terceira maluco linha uu";
+		constant nome: string := "Victor me ajuda";
+		variable count: natural range 0 to nome'length := 0;
 	begin
 		if rising_edge(clk_lcd) then
-			if count < len then
+			if count < nome'length then
 				count := count + 1;
 			else
 				count := 0;
