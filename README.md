@@ -27,3 +27,4 @@ Lista de componentes secundários que já foram implentados ou que ainda estão 
 
 - [x] Decrementador BCD8421
 - [x] Divisor de frequência
+- [x] Debounce
