@@ -9,6 +9,8 @@ package constantes is
 	constant piz_time : std_logic_vector;
 	constant las_time : std_logic_vector;
 	
+	constant sys_clock_divider : integer;
+	
 end constantes;
 
 package body constantes is
@@ -19,5 +21,9 @@ package body constantes is
 	constant pip_time : std_logic_vector (bus_max_width downto 0) := x"0007"; -- Tempo preprogramado do botao pipoca
 	constant piz_time : std_logic_vector (bus_max_width downto 0) := x"0014"; -- Tempo preprogramado do botao pizza
 	constant las_time : std_logic_vector (bus_max_width downto 0) := x"0103"; -- Tempo preprogramado do botao lasanha
+	
+	-- Fator de divisao para o clock sincronizado do sistema
+	-- Se dividir por 500 o clock resultante sera 100 KHz
+	constant sys_clock_divider : integer := 500;  
 	
 end constantes;
