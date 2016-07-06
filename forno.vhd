@@ -54,7 +54,7 @@ architecture microondas of forno is
 	end component;
 	
 	component Ripple_Clock
-	   generic ( fator : integer := 200 );
+	   generic ( fator : integer := 100 );
 	   port (
 		   clk_in : in std_logic;
 			clk_out : out std_logic
@@ -78,9 +78,9 @@ architecture microondas of forno is
 	end component;
 	
 	component Controlador_LCD
-	   generic ( conteudo : string );
 		port(
 			clk_lcd : in std_logic;
+			conteudo : in string;
 			selecionaChar: out std_logic;
 			endereco: out std_logic_vector(5 downto 0);
 			caracter: out character
@@ -124,7 +124,7 @@ architecture microondas of forno is
 	
 begin
    divisorFreq_CLOCK: Ripple_Clock generic map
-	   (fator => 50000000)
+	   (fator => sys_clock_divider)
 	port map
 	   (CLOCK, CLOCK_SYS_OUT);
 
@@ -177,14 +177,16 @@ begin
 	-- s_ls := integer'image(to_integer(unsigned(fio_saida_t(3 downto 0))));
 	
 	compControlador_LCD: Controlador_LCD
-	   generic map (
-		   conteudo => integer'image(to_integer(unsigned(fio_saida_t(15 downto 12)))) &
+   	port map (
+			clk_lcd => CLOCK,
+			conteudo => integer'image(to_integer(unsigned(fio_saida_t(15 downto 12)))) &
 			            integer'image(to_integer(unsigned(fio_saida_t(11 downto 8)))) & ":" &
 							integer'image(to_integer(unsigned(fio_saida_t(7 downto 4)))) &
-							integer'image(to_integer(unsigned(fio_saida_t(3 downto 0))))
-		)
-   	port map
-		(CLOCK, fio_selecionaChar, fio_endereco_lcd, fio_caracter_lcd);
+							integer'image(to_integer(unsigned(fio_saida_t(3 downto 0)))),
+			selecionaChar => fio_selecionaChar,
+			endereco => fio_endereco_lcd,
+			caracter => fio_caracter_lcd
+		);
 		
 	compLCD_Driver: LCD_Driver port map
 		(CLOCK, fio_resetar_lcd_driver, fio_selecionaChar, '1', fio_endereco_lcd(3 downto 0), fio_endereco_lcd(5 downto 4),

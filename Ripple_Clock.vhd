@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity Ripple_Clock is
-   generic ( fator : integer := 200 );
+   generic ( fator : integer := 100 );
    port (
 	   clk_in: in std_logic;
 	   clk_out: out std_logic
