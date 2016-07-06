@@ -1,5 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use ieee.std_logic_unsigned.all;
 
 use work.constantes.all;
 
@@ -34,9 +36,10 @@ architecture microondas of forno is
 	component decoder_1
 	   port (
 		   clk : in std_logic;
+			clk_sys : in std_logic;
 			bt_pip, bt_piz, bt_las : in std_logic;
 			rd_dec1 : in std_logic;
-			ready_dec1 : out std_logic := '0';
+			ready_dec1 : buffer std_logic := '0';
 			bus_dec1 : out std_logic_vector (bus_max_width downto 0)
 		);
 	end component;
@@ -75,6 +78,7 @@ architecture microondas of forno is
 	end component;
 	
 	component Controlador_LCD
+	   generic ( conteudo : string );
 		port(
 			clk_lcd : in std_logic;
 			selecionaChar: out std_logic;
@@ -83,6 +87,16 @@ architecture microondas of forno is
 		);
 	end component;
 	
+	component debounce
+      generic(
+		   tamanho_contador : integer := 19);
+      port (
+         clk : in  std_logic; 
+         in_botao : in  std_logic;
+         resultado : out std_logic
+		);
+   end component;
+	
 	-- sinais de controle do LCD
 	signal fio_resetar_lcd_driver, fio_selecionaChar : std_logic;
 	signal fio_endereco_lcd : std_logic_vector (5 downto 0);
@@ -90,6 +104,9 @@ architecture microondas of forno is
 	
 	-- sinais de controle do decodificador 1
 	signal fio_ready_dec1, fio_rd_dec1 : std_logic;
+	
+	-- sinais de controle dos botoes
+	signal fio_bt_start, fio_bt_cancel, fio_bt_stop : std_logic;
 	
 	-- sinais de controle do temporizador
 	signal fio_op_t, fio_fp_t, fio_wr_t, fio_ce_t : std_logic;
@@ -116,9 +133,9 @@ begin
 		
 	compControlador : Controlador port map (
 	   clk => CLOCK_SYS_OUT,
-		bt_start => BT_START,
-		bt_stop => BT_STOP,
-		bt_cancel => BT_CANCEL,
+		bt_start => fio_bt_start,
+		bt_stop => fio_bt_stop,
+		bt_cancel => fio_bt_cancel,
 		sw_sp => SW_SENPORTA,
 		en_wait => LED_ESPERA,
 		en_lamp => LED_OPERANDO, -- LED OPERANDO
@@ -131,7 +148,8 @@ begin
 		rst_all => fio_rst_all );
 		
 	compDecoder_1 : decoder_1 port map (
-	   clk => CLOCK_SYS_OUT,
+	   clk => CLOCK,
+		clk_sys => CLOCK_SYS_OUT,
 	   bt_pip => BT_PIP,
 		bt_piz => BT_PIZ,
 		bt_las => BT_LAS,
@@ -146,17 +164,49 @@ begin
 		wr_t => fio_wr_t,
 		rst_all => fio_rst_all,
 		bus_t_in => barramento,
-		t_out => TEMPORIZADOR_TESTE, -- falta ligar essa saida em algum lugar (provavelmente controlaodor do LCD e depois ULA)
+		t_out => fio_saida_t, -- falta ligar essa saida em algum lugar (provavelmente controlaodor do LCD e depois ULA)
 		op_t => fio_op_t,
 		fp_t => fio_fp_t
 	);
 	
-		
-	compControlador_LCD: Controlador_LCD port map
-		(CLOCK_SYS_OUT, fio_selecionaChar, fio_endereco_lcd, fio_caracter_lcd);
+	TEMPORIZADOR_TESTE <= fio_saida_t;
+	
+   -- m_ms := integer'image(to_integer(unsigned(fio_saida_t(15 downto 12))));
+	-- m_ls := integer'image(to_integer(unsigned(fio_saida_t(11 downto 8))));
+	-- s_ms := integer'image(to_integer(unsigned(fio_saida_t(7 downto 4))));
+	-- s_ls := integer'image(to_integer(unsigned(fio_saida_t(3 downto 0))));
+	
+	compControlador_LCD: Controlador_LCD
+	   generic map (
+		   conteudo => integer'image(to_integer(unsigned(fio_saida_t(15 downto 12)))) &
+			            integer'image(to_integer(unsigned(fio_saida_t(11 downto 8)))) & ":" &
+							integer'image(to_integer(unsigned(fio_saida_t(7 downto 4)))) &
+							integer'image(to_integer(unsigned(fio_saida_t(3 downto 0))))
+		)
+   	port map
+		(CLOCK, fio_selecionaChar, fio_endereco_lcd, fio_caracter_lcd);
 		
 	compLCD_Driver: LCD_Driver port map
-		(CLOCK_SYS_OUT, fio_resetar_lcd_driver, fio_selecionaChar, '1', fio_endereco_lcd(3 downto 0), fio_endereco_lcd(5 downto 4),
+		(CLOCK, fio_resetar_lcd_driver, fio_selecionaChar, '1', fio_endereco_lcd(3 downto 0), fio_endereco_lcd(5 downto 4),
 	   fio_caracter_lcd, x"00", LCD_RS, LCD_RW, LCD_E, LCD_DADOS);
+	
+	-- port map de debounce para os botoes
+	debounce_bt_start : debounce port map (
+	   clk => CLOCK,
+		in_botao => BT_START,
+		resultado => fio_bt_start
+	);
+	
+	debounce_bt_cancel : debounce port map (
+	   clk => CLOCK,
+		in_botao => BT_CANCEL,
+		resultado => fio_bt_cancel
+	);
+	
+	debounce_bt_stop : debounce port map (
+	   clk => CLOCK,
+		in_botao => BT_STOP,
+		resultado => fio_bt_stop
+	);
 	
 end microondas;
