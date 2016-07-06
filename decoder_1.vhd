@@ -11,7 +11,7 @@ entity decoder_1 is
 		clk_sys : in std_logic;
 	   bt_pip, bt_piz, bt_las : in std_logic;
 		rd_dec1 : in std_logic;
-		ready_dec1 : out std_logic := '0';
+		ready_dec1 : buffer std_logic := '0';
 		bus_dec1 : out std_logic_vector (bus_max_width downto 0) := (others => 'Z')
 	);
 end decoder_1;
@@ -59,10 +59,10 @@ begin
 	selecao <= sinal_bt_pip & sinal_bt_piz & sinal_bt_las ;
 	
 	with selecao select dados_tempo <=
-	   "100" when "100",
-		"010" when "010",
-		"001" when "001",
-		"ZZZ" when others;
+	   pip_time when "100",
+		piz_time when "010",
+		las_time when "001",
+		(others => 'Z') when others;
 		
 	process
 	begin
