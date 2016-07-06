@@ -24,7 +24,7 @@ begin
 
 	process (clk, bt_cancel)
 	begin
-	   if bt_cancel = '0' then
+	   if bt_cancel = '1' then
 		   -- rst_all <= '1';
 			ctrl_sto <= espera;
 		elsif falling_edge(clk) then
@@ -42,24 +42,34 @@ begin
 				   rd_dec1 <= '1';
 					wr_t <= '1';
 					ctrl_sto_prox <= pronto;
+				else
+				   ctrl_sto_prox <= espera;
 				end if;
 			when pronto => -- Estado em pronto
 			   rd_dec1 <= '0';
 				wr_t <= '0';
-				if bt_start = '0' and sw_sp = '0' then
+				if bt_start = '1' and sw_sp = '1' then
 				   ctrl_sto_prox <= rodando;
+				elsif ready_dec1 = '1' then
+				   rd_dec1 <= '1';
+					wr_t <= '1';
+				   ctrl_sto_prox <= pronto;
 				end if;
 			when rodando => -- Estado em rodando
 			   ce_t <= '1';
-			   if bt_stop = '0' or sw_sp = '1' then
+			   if bt_stop = '1' or sw_sp = '0' then
 				   ce_t <= '0';
 				   ctrl_sto_prox <= parado;
 				elsif fp_t = '1' then
 				   ctrl_sto_prox <= espera;
+				else
+				   ctrl_sto_prox <= rodando;
 				end if;
 			when parado => -- Estado em parado
-			   if bt_start = '0' and sw_sp = '0' then
+			   if bt_start = '1' and sw_sp = '1' then
 				   ctrl_sto_prox <= rodando;
+				else
+				   ctrl_sto_prox <= parado;
 				end if;
 			when others => ctrl_sto_prox <= espera; -- condicao para voltar para o estado de espera
 		end case;
