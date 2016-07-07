@@ -11,6 +11,7 @@ entity decoder_1 is
 		clk_sys : in std_logic;
 	   bt_pip, bt_piz, bt_las : in std_logic;
 		rd_dec1 : in std_logic;
+		rst_all : in std_logic;
 		ready_dec1 : buffer std_logic := '0';
 		bus_dec1 : out std_logic_vector (bus_max_width downto 0) := (others => 'Z')
 	);

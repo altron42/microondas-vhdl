@@ -24,6 +24,6 @@ package body constantes is
 	
 	-- Fator de divisao para o clock sincronizado do sistema
 	-- Se dividir por 500 o clock resultante sera 100 KHz
-	constant sys_clock_divider : integer := 500;  
+	constant sys_clock_divider : integer := 50000000;  
 	
 end constantes;

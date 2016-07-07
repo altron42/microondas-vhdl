@@ -15,9 +15,12 @@ entity LCD_Driver is
 		fsd_DadosEmBinario  	: in std_logic_vector(7 downto 0);
 		fsd_RS, fsd_RW			: out std_logic;
 		fsd_E					   : Buffer std_logic;
-		fsd_Dados				: out std_logic_vector(7 downto 0)
+		fsd_Dados				: out std_logic_vector(7 downto 0);
+		fsd_tempo            : in std_logic_vector (15 downto 0)
 	);
 end LCD_Driver;
+
+
 
 architecture LCD_ME of LCD_Driver is
 	type fsd_estado is (functionSet1, functionSet2, functionSet3, functionSet4,
@@ -39,7 +42,15 @@ architecture LCD_ME of LCD_Driver is
    signal fsd_RAM : fsd_memoria := (0 to 79 =>	x"20");
 	signal fsd_EnderecoEscrita: std_logic_vector(5 downto 0);
 	
+	signal min_ms, min_ls, seg_ms, seg_ls : std_logic_vector (7 downto 0);
+	
 begin
+
+   min_ms <= x"3" & fsd_tempo(15 downto 12);
+	min_ls <= x"3" & fsd_tempo(11 downto 8);
+	seg_ms <= x"3" & fsd_tempo(7 downto 4);
+	seg_ls <= x"3" & fsd_tempo(3 downto 0);
+
 	process(fsd_Clk, fsd_AtivaEscrita) is
 	begin
 		fsd_EnderecoEscrita(5 downto 4) <= fsd_EnderecoEscritaY;
@@ -426,23 +437,23 @@ begin
 				fsd_estado_prox <= P75;
 			when P75 =>
 				fsd_RS <= '1'; fsd_RW <= '0';
-				fsd_Dados <= fsd_RAM(75);
+				fsd_Dados <= min_ms;
 				fsd_estado_prox <= P76;
 			when P76 =>
 				fsd_RS <= '1'; fsd_RW <= '0';
-				fsd_Dados <= fsd_RAM(76);
+				fsd_Dados <= min_ls;
 				fsd_estado_prox <= P77;
 			when P77 =>
 				fsd_RS <= '1'; fsd_RW <= '0';
-				fsd_Dados <= fsd_RAM(77);
+				fsd_Dados <= x"3A";
 				fsd_estado_prox <= P78;
 			when P78 =>
 				fsd_RS <= '1'; fsd_RW <= '0';
-				fsd_Dados <= fsd_RAM(78);
+				fsd_Dados <= seg_ms;
 				fsd_estado_prox <= P79;
 			when P79 =>
 				fsd_RS <= '1'; fsd_RW <= '0';
-				fsd_Dados <= fsd_RAM(79);
+				fsd_Dados <= seg_ls;
 				fsd_estado_prox <= returnHome;
 			when returnHome =>
 				fsd_RS <= '0'; fsd_RW <= '0';

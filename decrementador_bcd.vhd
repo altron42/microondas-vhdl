@@ -22,9 +22,9 @@ begin
 	   if rst = '1' then count := "0000";
 		elsif load = '1' then count := din; 
 	   elsif rising_edge(clk) and enable = '1' then
-		   count := count - "01";
+			count := count - "01";
 			if count >= "1010" then
-			   if estouro = '1' then count := "0101"; else count := "1001"; end if;
+				if estouro = '1' then count := "0101"; else count := "1001"; end if;
 			end if;
 		end if;
 		if count = "0000" then carry <= '1'; else carry <= '0'; end if;

@@ -10,7 +10,6 @@ entity Ripple_Clock is
 end Ripple_Clock;
 
 architecture DF of Ripple_Clock is
-	-- O clock da placa (50MHz) eh dividido por um fator de 200 para termos uma frequancia de 250Khz
 begin
 	process(clk_in)
 		variable count: natural := 0;

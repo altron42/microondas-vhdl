@@ -39,6 +39,7 @@ architecture microondas of forno is
 			clk_sys : in std_logic;
 			bt_pip, bt_piz, bt_las : in std_logic;
 			rd_dec1 : in std_logic;
+			rst_all : in std_logic;
 			ready_dec1 : buffer std_logic := '0';
 			bus_dec1 : out std_logic_vector (bus_max_width downto 0)
 		);
@@ -73,7 +74,8 @@ architecture microondas of forno is
 			fsd_DadosEmBinario  	: in std_logic_vector(7 downto 0);
 			fsd_RS, fsd_RW			: out std_logic;
 			fsd_E						: Buffer std_logic;
-			fsd_Dados				: out std_logic_vector(7 downto 0)
+			fsd_Dados				: out std_logic_vector(7 downto 0);
+			fsd_tempo            : in std_logic_vector(15 downto 0)
 		);
 	end component;
 	
@@ -154,6 +156,7 @@ begin
 		bt_piz => BT_PIZ,
 		bt_las => BT_LAS,
 		ready_dec1 => fio_ready_dec1, -- fio_ready_dec1
+		rst_all => fio_rst_all,
 		rd_dec1 => fio_rd_dec1,
 		bus_dec1 => barramento
 	);
@@ -179,10 +182,7 @@ begin
 	compControlador_LCD: Controlador_LCD
    	port map (
 			clk_lcd => CLOCK,
-			conteudo => integer'image(to_integer(unsigned(fio_saida_t(15 downto 12)))) &
-			            integer'image(to_integer(unsigned(fio_saida_t(11 downto 8)))) & ":" &
-							integer'image(to_integer(unsigned(fio_saida_t(7 downto 4)))) &
-							integer'image(to_integer(unsigned(fio_saida_t(3 downto 0)))),
+			conteudo => "Microondas hackudaum",
 			selecionaChar => fio_selecionaChar,
 			endereco => fio_endereco_lcd,
 			caracter => fio_caracter_lcd
@@ -190,7 +190,7 @@ begin
 		
 	compLCD_Driver: LCD_Driver port map
 		(CLOCK, fio_resetar_lcd_driver, fio_selecionaChar, '1', fio_endereco_lcd(3 downto 0), fio_endereco_lcd(5 downto 4),
-	   fio_caracter_lcd, x"00", LCD_RS, LCD_RW, LCD_E, LCD_DADOS);
+	   fio_caracter_lcd, x"00", LCD_RS, LCD_RW, LCD_E, LCD_DADOS, fio_saida_t);
 	
 	-- port map de debounce para os botoes
 	debounce_bt_start : debounce port map (
