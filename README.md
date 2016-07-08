@@ -3,6 +3,41 @@ Implementação de um microondas usando VHDL
 
 **Status**: Em desenvolvimento
 
+## Arquitetura do sistema
+
+O sistema possui três módulos a seguir:
+
+* Módulo programação automática
+* Módulo programação incremental
+* Módulo programação via teclado
+
+## Diagrama em blocos do sistema
+
+![diagrama em blocos](/images/diagrama_blocos_microondas.png)
+
+## Características
+
+A contagem do temporizador inicia com o valor 0 min 0 seg (00:00).
+Um LCD mostra o tempo restante de cozimento em progresso.
+
+
+### Módulo de programação automática
+
+Três botões de autocozimento fornecem as programações do forno:
+
+* Pipoca (0 min 7 seg)
+* Pizza (0 min 14 seg)
+* Lasanha (1 min 3 seg)
+
+#### Modos de operação para o módulo de programação automática
+
+1. Quando ligado ou *cancel* acionado, o forno fica no _modo wait_ e a contagem em 00:00.
+2. Um led acende sinalizando que o forno espera ser programado (*led wait*).
+3. Seleciona-se uma programação de auto cozimento dentre as opções disponíveis (pipoca, pizza ou lasanha).
+4. Inicia ou para o cozimento (botão *start/continue* e *stop*).
+5. Contagem do **temporizador** decresce a cada segundo após iniciada.
+6. A contagem para automaticamente quando atinge o valor zero e fica no modo *wait*.
+
 ## Componentes principais
 
 Os componentes principais são aqueles que compõem a lógica digital do sistema no nível mais alto.
@@ -28,3 +63,4 @@ Lista de componentes secundários que já foram implentados ou que ainda estão 
 - [x] Decrementador BCD8421
 - [x] Divisor de frequência
 - [x] Debounce
+- [x] Registrador de 16 bits
