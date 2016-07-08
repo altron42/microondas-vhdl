@@ -13,6 +13,7 @@ end Temporizador;
 architecture temporizador_MS of Temporizador is
    
 	component decrementador_bcd
+	   generic ( clk_divider : integer := 50 );
 	   port (
 		   clk, load, enable, rst, estouro : in std_logic;
 			din : in std_logic_vector (3 downto 0);

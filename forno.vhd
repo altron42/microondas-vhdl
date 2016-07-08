@@ -12,10 +12,8 @@ entity forno is
 		BT_PIP, BT_PIZ, BT_LAS : in std_logic;
 		SW_SENPORTA : in std_logic;
 		LED_ESPERA, LED_OPERANDO : out std_logic;
-		TEMPORIZADOR_TESTE : out std_logic_vector (bus_max_width downto 0);
 		LCD_DADOS : out std_logic_vector (7 downto 0);
-		LCD_RS, LCD_RW, LCD_E : out std_logic;
-		t_clk_out : out std_logic
+		LCD_RS, LCD_RW, LCD_E : out std_logic
 	);
 end forno;
 
@@ -82,7 +80,6 @@ architecture microondas of forno is
 	component Controlador_LCD
 		port(
 			clk_lcd : in std_logic;
-			conteudo : in string;
 			selecionaChar: out std_logic;
 			endereco: out std_logic_vector(5 downto 0);
 			caracter: out character
@@ -120,11 +117,13 @@ architecture microondas of forno is
 	signal fio_rst_all : std_logic;
 	
 	-- saida do clock dividido
-	signal CLOCK_SYS_OUT : std_logic;
+	signal CLOCK_SYS_OUT, CLOCK_TEMPORIZADOR : std_logic;
 	
 	signal fio_saida_t : std_logic_vector (bus_max_width downto 0);
 	
 begin
+
+   -- componentes de clock
    divisorFreq_CLOCK: Ripple_Clock generic map
 	   (fator => sys_clock_divider)
 	port map
@@ -172,17 +171,9 @@ begin
 		fp_t => fio_fp_t
 	);
 	
-	TEMPORIZADOR_TESTE <= fio_saida_t;
-	
-   -- m_ms := integer'image(to_integer(unsigned(fio_saida_t(15 downto 12))));
-	-- m_ls := integer'image(to_integer(unsigned(fio_saida_t(11 downto 8))));
-	-- s_ms := integer'image(to_integer(unsigned(fio_saida_t(7 downto 4))));
-	-- s_ls := integer'image(to_integer(unsigned(fio_saida_t(3 downto 0))));
-	
 	compControlador_LCD: Controlador_LCD
    	port map (
 			clk_lcd => CLOCK,
-			conteudo => "Microondas hackudaum",
 			selecionaChar => fio_selecionaChar,
 			endereco => fio_endereco_lcd,
 			caracter => fio_caracter_lcd

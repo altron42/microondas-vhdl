@@ -6,7 +6,6 @@ use ieee.std_logic_unsigned.all;
 entity Controlador_LCD is
 	port(
 		clk_lcd : in std_logic;
-		conteudo : in string;
 		selecionaChar : out std_logic;
 		endereco : out std_logic_vector (5 downto 0);
 		caracter : out character
@@ -14,6 +13,7 @@ entity Controlador_LCD is
 end Controlador_LCD;
 
 architecture controle_lcd of Controlador_LCD is
+   constant conteudo : string := "Microondas hackudaum";
 begin
 	process(clk_lcd)
 		variable count: natural range 0 to conteudo'length-1 := 0;

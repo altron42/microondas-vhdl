@@ -23,7 +23,7 @@ package body constantes is
 	constant las_time : std_logic_vector (bus_max_width downto 0) := x"0103"; -- Tempo preprogramado do botao lasanha
 	
 	-- Fator de divisao para o clock sincronizado do sistema
-	-- Se dividir por 500 o clock resultante sera 100 KHz
-	constant sys_clock_divider : integer := 50000000;  
+	-- Se dividir por 500000 o clock resultante sera 100 Hz
+	constant sys_clock_divider : integer := 500000;  
 	
 end constantes;
