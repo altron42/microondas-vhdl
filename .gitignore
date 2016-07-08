@@ -5,6 +5,7 @@
 !*.vhd
 !.gitignore
 !README.md
+!*.png
 
 # Ignorar subdiretorios também
 !*/
