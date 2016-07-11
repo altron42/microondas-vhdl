@@ -4,8 +4,8 @@ use ieee.std_logic_1164.all;
 entity Temporizador is
    port (
 	   clk_t, ce_t, wr_t, rst_all : in std_logic;
-		bus_t_in : in std_logic_vector (15 downto 0);
-		t_out : out std_logic_vector (15 downto 0);
+		bus_t_in : in std_logic_vector (15 downto 0) := x"0000";
+		t_out : out std_logic_vector (15 downto 0) := x"0000";
 		op_t, fp_t : out std_logic
 	);
 end Temporizador;
