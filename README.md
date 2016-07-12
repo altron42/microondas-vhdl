@@ -45,12 +45,12 @@ Botões +3 e +5 *incrementam* o tempo do temporizador de 3 e 5 sengundos, respec
 #### Modos de operação para o módulo de programação incremental
 
 1. O forno de micro-ondas está no modo *wait*
-2. Botões de autocozimento ou os botões +3 e +5 **alteram** o tempo de cozimento em _qualquer situação_
+2. Botões de autocozimento ou os botões +3 e +5 **alteram** o tempo de cozimento em *_qualquer situação_*
 3. Botão **start** acionado e porta fechada _inicia_ a contagem decrescente do tempo de cozimento
 4. Contagem do **temporizador** _decresce_ a cada seg.
-   * Botões **+*3* e **+5** _adiciona_ a contagem em progresso
+   * Botões **+3** e **+5** _adiciona_ a contagem em progresso
    * Botão **stop** ou porta aberta _congelam_ a contagem
-   * Botão **continue** _reinicia_ a contagem congelada
+   * Botão **continue** __reinicia__ a contagem congelada
    * Botão **cancel** _zera_ e para a contagem
 5. A contagem para automaticamente quando atinge valor zero e fica no modo *wait*
 
