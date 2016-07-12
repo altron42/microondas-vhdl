@@ -56,11 +56,21 @@ architecture microondas of forno is
 		);
 	end component;
 	
+	component ula
+	    port (
+		   clk_sys : in std_logic;
+			t1_in, t2_in : in std_logic_vector (bus_max_width downto 0);
+			t_somado : out std_logic_vector (bus_max_width downto 0);
+			carry : out std_logic;
+			rd_ula : in std_logic
+		);
+	end component;
+	
 	component Temporizador
 	   port (
 		   clk_t, ce_t, wr_t, rst_all : in std_logic;
-			bus_t_in : in std_logic_vector (15 downto 0);
-			t_out : out std_logic_vector (15 downto 0);
+			bus_t_in : in std_logic_vector (bus_max_width downto 0);
+			t_out : out std_logic_vector (bus_max_width downto 0);
 			op_t, fp_t : out std_logic
 		);
 	end component;
@@ -123,11 +133,14 @@ architecture microondas of forno is
 	-- sinais de controle dos botoes
 	signal fio_bt_start, fio_bt_cancel, fio_bt_stop : std_logic;
 	
+	-- sinais de controle da ULA
+	signal fio_rd_ula : std_logic;
+	
 	-- sinais de controle do temporizador
 	signal fio_op_t, fio_fp_t, fio_wr_t, fio_ce_t : std_logic;
 	
-	-- Sinal do barramento
-	signal barramento : std_logic_vector (bus_max_width downto 0);
+	-- sinais dos barramentos
+	signal barramento, barramento_ula : std_logic_vector (bus_max_width downto 0);
 	
 	-- sinal de controle assincrono para resetar todos os componentes
 	signal fio_rst_all : std_logic;
@@ -147,7 +160,8 @@ begin
 
    divisorFreq_LCDDriver: Ripple_Clock port map
 	   (CLOCK, fio_resetar_lcd_driver);
-		
+	
+	-- CONTROLADOR
 	compControlador : Controlador port map (
 	   clk => CLOCK_SYS_OUT,
 		bt_start => fio_bt_start,
@@ -163,7 +177,8 @@ begin
 		wr_t => fio_wr_t,
 		ce_t => fio_ce_t,
 		rst_all => fio_rst_all );
-		
+	
+	-- DECODER 1
 	compDecoder_1 : decoder_1 port map (
 	   clk => CLOCK,
 		clk_sys => CLOCK_SYS_OUT,
@@ -176,6 +191,7 @@ begin
 		bus_dec1 => barramento
 	);
 	
+	-- DECODER 2
 	compDecoder_2 : decoder_2 port map (
 		clk => CLOCK,
 		clk_sys => CLOCK_SYS_OUT,
@@ -187,17 +203,29 @@ begin
 		bus_dec2 => barramento_ula
 	);
 	
+	-- ULA
+	compULA : ula port map (
+	   clk_sys => CLOCK_SYS_OUT,
+	   t1_in => fio_saida_t,
+		t2_in => barramento_ula,
+		t_somado => barramento,
+		carry => open,
+		rd_ula => fio_rd_ula
+	);
+	
+	-- TEMPORIZADOR
 	compTemporizador : Temporizador port map (
 	   clk_t => CLOCK_SYS_OUT,
 	   ce_t => fio_ce_t,
 		wr_t => fio_wr_t,
 		rst_all => fio_rst_all,
 		bus_t_in => barramento,
-		t_out => fio_saida_t, -- falta ligar essa saida em algum lugar (provavelmente controlaodor do LCD e depois ULA)
+		t_out => fio_saida_t, -- Ligado no driver do LCD e na entrada 1 da ULA
 		op_t => fio_op_t,
 		fp_t => fio_fp_t
 	);
 	
+	-- COMPONENTES DO LCD
 	compControlador_LCD: Controlador_LCD
    	port map (
 			clk_lcd => CLOCK,
