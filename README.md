@@ -63,7 +63,7 @@ Lista de componentes principais que já foram implementados ou que estão sendo 
 - [x] Decodificador 1 (programação automática)
 - [x] Temporizador de minutos e segundos
 - [x] Controlador
-- [ ] Decodificador 2 (programação incremental)
+- [x] Decodificador 2 (programação incremental)
 - [ ] ULA
 - [ ] Controlador do teclado
 - [ ] Registrador Controlador do Teclado
