@@ -10,6 +10,7 @@ entity forno is
 	   CLOCK : in std_logic;
 	   BT_START, BT_CANCEL, BT_STOP : in std_logic;
 		BT_PIP, BT_PIZ, BT_LAS : in std_logic;
+		BT_3, BT_5 : in std_logic;
 		SW_SENPORTA : in std_logic;
 		LED_ESPERA, LED_OPERANDO : out std_logic;
 		LCD_DADOS : out std_logic_vector (7 downto 0);
@@ -40,6 +41,18 @@ architecture microondas of forno is
 			rst_all : in std_logic;
 			ready_dec1 : buffer std_logic := '0';
 			bus_dec1 : out std_logic_vector (bus_max_width downto 0)
+		);
+	end component;
+	
+	component decoder_2
+	   port (
+		   clk : in std_logic;
+			clk_sys : in std_logic;
+			bt_3, bt_5 : in std_logic;
+			rd_dec2 : in std_logic;
+			rst_all : in std_logic;
+			ready_dec2 : buffer std_logic := '0';
+			bus_dec2 : out std_logic_vector (bus_max_width downto 0)
 		);
 	end component;
 	
@@ -104,6 +117,9 @@ architecture microondas of forno is
 	-- sinais de controle do decodificador 1
 	signal fio_ready_dec1, fio_rd_dec1 : std_logic;
 	
+	-- sinais de controle do decodificador 2
+	signal fio_ready_dec2, fio_rd_dec2 : std_logic;
+	
 	-- sinais de controle dos botoes
 	signal fio_bt_start, fio_bt_cancel, fio_bt_stop : std_logic;
 	
@@ -159,7 +175,18 @@ begin
 		rd_dec1 => fio_rd_dec1,
 		bus_dec1 => barramento
 	);
-		
+	
+	compDecoder_2 : decoder_2 port map (
+		clk => CLOCK,
+		clk_sys => CLOCK_SYS_OUT,
+		bt_3 => BT_3,
+		bt_5 => BT_5,
+		rd_dec2 => fio_ready_dec2,
+		rst_all => fio_rst_all,
+		ready_dec2 => fio_rd_dec2,
+		bus_dec2 => barramento_ula
+	);
+	
 	compTemporizador : Temporizador port map (
 	   clk_t => CLOCK_SYS_OUT,
 	   ce_t => fio_ce_t,
