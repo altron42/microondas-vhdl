@@ -64,7 +64,7 @@ Lista de componentes principais que já foram implementados ou que estão sendo 
 - [x] Temporizador de minutos e segundos
 - [x] Controlador
 - [x] Decodificador 2 (programação incremental)
-- [ ] ULA
+- [x] ULA
 - [ ] Controlador do teclado
 - [ ] Registrador Controlador do Teclado
 - [x] Controlador do LCD
@@ -80,3 +80,4 @@ Lista de componentes secundários que já foram implentados ou que ainda estão 
 - [x] Divisor de frequência
 - [x] Debounce
 - [x] Registrador de 16 bits
+- [x] Somador BCD
