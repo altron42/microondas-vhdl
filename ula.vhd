@@ -21,6 +21,7 @@ architecture ula_rtl of ula is
 	   port (
 		   a, b  : in  std_logic_vector (3 downto 0);
          cin : in std_logic;
+			estouro : in std_logic;
          sum : out std_logic_vector (3 downto 0);
          cout : out std_logic
 		);
@@ -38,6 +39,8 @@ architecture ula_rtl of ula is
 	
 	signal carry1, carry2, carry3 : std_logic;
    signal soma_parcial : std_logic_vector (bus_max_width downto 0);
+	
+	shared variable registrador_tempo : std_logic_vector (bus_max_width downto 0);
 begin
 
    compRegistrador : registrador port map (
@@ -52,6 +55,7 @@ begin
 	   a => t1_in(3 downto 0),
 		b => t2_in(3 downto 0),
 		cin => '0',
+		estouro => '0',
 		cout => carry1,
 		sum => soma_parcial(3 downto 0)
 	);
@@ -60,6 +64,7 @@ begin
 	   a => t1_in(7 downto 4),
 		b => t2_in(7 downto 4),
 		cin => carry1,
+		estouro => '1',
 		cout => carry2,
 		sum => soma_parcial(7 downto 4)
 	);
@@ -68,6 +73,7 @@ begin
 	   a => t1_in(11 downto 8),
 		b => t2_in(11 downto 8),
 		cin => carry2,
+		estouro => '0',
 		cout => carry3,
 		sum => soma_parcial(11 downto 8)
 	);
@@ -76,6 +82,7 @@ begin
 	   a => t1_in(15 downto 12),
 		b => t2_in(15 downto 12),
 		cin => carry3,
+		estouro => '0',
 		cout => carry,
 		sum => soma_parcial(15 downto 12)
 	);
@@ -84,7 +91,7 @@ begin
 	begin
 	   if rising_edge(clk_sys) then
 		   if rd_ula = '1' then
-		      t_somado <= soma_parcial; -- ativa leitura do registrador
+		      t_somado <= registrador_tempo; -- ativa leitura do registrador
 		   else
 			   t_somado <= (others => 'Z'); -- volta para estado de alta impedancia
 			end if;
