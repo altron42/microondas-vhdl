@@ -21,10 +21,10 @@ begin
       soma_temp := ('0' & a) + ('0' & b) + ("0000" & cin);
 		if estouro = '1' and soma_temp > 5 then
 		   cout <= '1';
-			sum <= resize((soma_temp + "01010"),4);
-      elsif(soma_temp > 9) then
+			sum <= std_logic_vector(resize(unsigned(soma_temp + "01010"),4));
+      elsif (soma_temp > 9) then
          cout <= '1';
-         sum <= resize((soma_temp + "00110"),4);
+         sum <= std_logic_vector(resize(unsigned(soma_temp + "00110"),4));
       else
          cout <= '0';
          sum <= soma_temp(3 downto 0);
