@@ -24,8 +24,9 @@ architecture microondas of forno is
 	   port (
 		   clk, bt_start, bt_cancel, bt_stop, sw_sp : in std_logic;
 			en_wait, en_lamp : out std_logic;
-			ready_dec1 : in std_logic;
-			rd_dec1 : out std_logic;
+			ready_dec1,ready_dec2 : in std_logic;
+			rd_dec1, rd_dec2 : out std_logic;
+			rd_ula : out std_logic := '0';
 			op_t, fp_t : in std_logic;
 			wr_t, ce_t : out std_logic;
 			rst_all : out std_logic
@@ -171,7 +172,10 @@ begin
 		en_wait => LED_ESPERA,
 		en_lamp => LED_OPERANDO, -- LED OPERANDO
 		ready_dec1 => fio_ready_dec1,
+		ready_dec2 => fio_ready_dec2,
 		rd_dec1 => fio_rd_dec1,
+		rd_dec2 => fio_rd_dec2,
+		rd_ula => fio_rd_ula,
 		op_t => fio_op_t,
 		fp_t => fio_fp_t,
 		wr_t => fio_wr_t,
