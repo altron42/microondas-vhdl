@@ -11,6 +11,7 @@ entity ula is
 	   t1_in, t2_in : in std_logic_vector (bus_max_width downto 0);
 		t_somado : out std_logic_vector (bus_max_width downto 0);
 		carry : out std_logic;
+		rst_all : in std_logic;
 		rd_ula : in std_logic
 	);
 end ula;
@@ -27,29 +28,10 @@ architecture ula_rtl of ula is
 		);
 	end component;
 	
-	component registrador 
-	   port (
-			d   : in std_logic_vector (bus_max_width downto 0); -- dado
-			ld  : in std_logic; -- enable
-			rst : in std_logic; -- reset assisncrono
-			clk : in std_logic; -- clock
-			q   : out std_logic_vector (bus_max_width downto 0) -- saida
-		);
-	end component;
-	
 	signal carry1, carry2, carry3 : std_logic;
    signal soma_parcial : std_logic_vector (bus_max_width downto 0);
 	
-	shared variable registrador_tempo : std_logic_vector (bus_max_width downto 0);
 begin
-
-   compRegistrador : registrador port map (
-	   d => soma_parcial,
-		ld => sinal_bt_3 or sinal_bt_5,
-		rst => rst_all,
-		clk => clk_sys,
-		q => registrador_tempo
-	);
 
    adder1 : bcd_adder port map (
 	   a => t1_in(3 downto 0),
@@ -91,7 +73,7 @@ begin
 	begin
 	   if rising_edge(clk_sys) then
 		   if rd_ula = '1' then
-		      t_somado <= registrador_tempo; -- ativa leitura do registrador
+		      t_somado <= soma_parcial; -- ativa leitura da soma e joga no barramento
 		   else
 			   t_somado <= (others => 'Z'); -- volta para estado de alta impedancia
 			end if;
