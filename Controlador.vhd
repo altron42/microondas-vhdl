@@ -6,7 +6,7 @@ entity Controlador is
 	   clk, bt_start, bt_cancel, bt_stop, sw_sp : in std_logic;
 		en_wait, en_lamp : out std_logic := '0';
 		ready_dec1, ready_dec2 : in std_logic;
-		rd_dec1, rd_dec2 : buffer std_logic := '0';
+		rd_dec1, rd_dec2 : out std_logic := '0';
 		rd_ula : out std_logic := '0';
 		op_t, fp_t : in std_logic;
 		wr_t, ce_t : out std_logic := '0';
@@ -41,7 +41,7 @@ begin
 			   rd_dec2 <= '1';
 				rd_ula <= '1';
 				wr_t <= '1';
-			elsif rd_dec2 = '1' then
+			else
 			   wr_t <= '0';
 				rd_ula <= '0';
 				rd_dec2 <= '0';
