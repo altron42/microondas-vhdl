@@ -197,9 +197,9 @@ begin
 		clk_sys => CLOCK_SYS_OUT,
 		bt_3 => BT_3,
 		bt_5 => BT_5,
-		rd_dec2 => fio_ready_dec2,
+		rd_dec2 => fio_rd_dec2,
 		rst_all => fio_rst_all,
-		ready_dec2 => fio_rd_dec2,
+		ready_dec2 => fio_ready_dec2,
 		bus_dec2 => barramento_ula
 	);
 	
