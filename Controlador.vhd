@@ -6,7 +6,7 @@ entity Controlador is
 	   clk, bt_start, bt_cancel, bt_stop, sw_sp : in std_logic;
 		en_wait, en_lamp : out std_logic := '0';
 		ready_dec1, ready_dec2 : in std_logic;
-		rd_dec1, rd_dec2 : out std_logic := '0';
+		rd_dec1 : out std_logic := '0';
 		rd_ula : out std_logic := '0';
 		op_t, fp_t : in std_logic;
 		wr_t, ce_t : out std_logic := '0';
@@ -15,44 +15,35 @@ entity Controlador is
 end Controlador;
 
 architecture rtl_controlador of Controlador is
-   type ctrl_estados is (espera, pronto, rodando, parado);
+   type ctrl_estados is (espera, pronto, rodando, parado, reset);
 	
-	signal ctrl_sto, ctrl_sto_prox : ctrl_estados := espera;
+	signal ctrl_sto, ctrl_sto_prox, sto_anterior : ctrl_estados;
+	
 begin
 
    en_lamp <= op_t;
 	en_wait <= not op_t;
 
-	process (clk)
+	process (clk, bt_cancel)
 	begin
-		if falling_edge(clk) then
+	   if bt_cancel = '1' then
+		   ctrl_sto <= reset;
+		elsif falling_edge(clk) then
 		   ctrl_sto <= ctrl_sto_prox;
 		end if;
 	end process;
 	
-	process (ctrl_sto, bt_cancel)
+	process (ctrl_sto)
 	begin
-	   if bt_cancel = '1' then
-		   ctrl_sto_prox <= espera;
-			rst_all <= '1';
-		else
-		   rst_all <= '0';
-			if ready_dec2 = '1' then
-			   rd_dec2 <= '1';
-				rd_ula <= '1';
-				wr_t <= '1';
-			else
-			   wr_t <= '0';
-				rd_ula <= '0';
-				rd_dec2 <= '0';
-			end if;
 			case ctrl_sto is
 				when espera => -- Estado em espera
+				   rst_all <= '0';
 					ce_t <= '0';
 					if ready_dec1 = '1' then
 						rd_dec1 <= '1';
 						wr_t <= '1';
 						ctrl_sto_prox <= pronto;
+					
 					else
 						ctrl_sto_prox <= espera;
 					end if;
@@ -65,6 +56,8 @@ begin
 						rd_dec1 <= '1';
 						wr_t <= '1';
 						ctrl_sto_prox <= pronto;
+					else
+					   ctrl_sto_prox <= pronto;
 					end if;
 				when rodando => -- Estado em rodando
 					ce_t <= '1';
@@ -82,9 +75,12 @@ begin
 					else
 						ctrl_sto_prox <= parado;
 					end if;
+				when reset =>  -- Estado reseta tudo
+				   rst_all <= '1';
+					ctrl_sto_prox <= espera;
 				when others => ctrl_sto_prox <= espera; -- condicao para voltar para o estado de espera
 			end case;
-		end if;
+		-- end if;
 	end process;
 
 end rtl_controlador;

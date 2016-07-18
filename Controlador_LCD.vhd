@@ -13,7 +13,7 @@ entity Controlador_LCD is
 end Controlador_LCD;
 
 architecture controle_lcd of Controlador_LCD is
-   constant conteudo : string := "Microondas hackudaum";
+   constant conteudo : string := "   Microondas";
 begin
 	process(clk_lcd)
 		variable count: natural range 0 to conteudo'length-1 := 0;

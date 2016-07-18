@@ -25,7 +25,7 @@ architecture microondas of forno is
 		   clk, bt_start, bt_cancel, bt_stop, sw_sp : in std_logic;
 			en_wait, en_lamp : out std_logic;
 			ready_dec1,ready_dec2 : in std_logic;
-			rd_dec1, rd_dec2 : out std_logic;
+			rd_dec1 : out std_logic;
 			rd_ula : out std_logic := '0';
 			op_t, fp_t : in std_logic;
 			wr_t, ce_t : out std_logic;
@@ -36,7 +36,6 @@ architecture microondas of forno is
 	component decoder_1
 	   port (
 		   clk : in std_logic;
-			clk_sys : in std_logic;
 			bt_pip, bt_piz, bt_las : in std_logic;
 			rd_dec1 : in std_logic;
 			rst_all : in std_logic;
@@ -48,9 +47,7 @@ architecture microondas of forno is
 	component decoder_2
 	   port (
 		   clk : in std_logic;
-			clk_sys : in std_logic;
 			bt_3, bt_5 : in std_logic;
-			rd_dec2 : in std_logic;
 			rst_all : in std_logic;
 			ready_dec2 : buffer std_logic := '0';
 			bus_dec2 : out std_logic_vector (bus_max_width downto 0)
@@ -59,10 +56,11 @@ architecture microondas of forno is
 	
 	component ula
 	    port (
-		   clk_sys : in std_logic;
 			t1_in, t2_in : in std_logic_vector (bus_max_width downto 0);
 			t_somado : out std_logic_vector (bus_max_width downto 0);
 			carry : out std_logic;
+			rst_all : in std_logic;
+			ready_dec2 : in std_logic;
 			rd_ula : in std_logic
 		);
 	end component;
@@ -112,7 +110,7 @@ architecture microondas of forno is
 	
 	component debounce
       generic(
-		   tamanho_contador : integer := 19);
+		   tamanho_contador : integer := 2);
       port (
          clk : in  std_logic; 
          in_botao : in  std_logic;
@@ -129,7 +127,7 @@ architecture microondas of forno is
 	signal fio_ready_dec1, fio_rd_dec1 : std_logic;
 	
 	-- sinais de controle do decodificador 2
-	signal fio_ready_dec2, fio_rd_dec2 : std_logic;
+	signal fio_ready_dec2 : std_logic;
 	
 	-- sinais de controle dos botoes
 	signal fio_bt_start, fio_bt_cancel, fio_bt_stop : std_logic;
@@ -149,7 +147,7 @@ architecture microondas of forno is
 	-- saida do clock dividido
 	signal CLOCK_SYS_OUT, CLOCK_TEMPORIZADOR : std_logic;
 	
-	signal fio_saida_t : std_logic_vector (bus_max_width downto 0);
+	signal fio_saida_t, saida_tempo : std_logic_vector (bus_max_width downto 0);
 	
 begin
 
@@ -174,7 +172,6 @@ begin
 		ready_dec1 => fio_ready_dec1,
 		ready_dec2 => fio_ready_dec2,
 		rd_dec1 => fio_rd_dec1,
-		rd_dec2 => fio_rd_dec2,
 		rd_ula => fio_rd_ula,
 		op_t => fio_op_t,
 		fp_t => fio_fp_t,
@@ -184,8 +181,7 @@ begin
 	
 	-- DECODER 1
 	compDecoder_1 : decoder_1 port map (
-	   clk => CLOCK,
-		clk_sys => CLOCK_SYS_OUT,
+		clk => CLOCK_SYS_OUT,
 	   bt_pip => BT_PIP,
 		bt_piz => BT_PIZ,
 		bt_las => BT_LAS,
@@ -197,11 +193,9 @@ begin
 	
 	-- DECODER 2
 	compDecoder_2 : decoder_2 port map (
-		clk => CLOCK,
-		clk_sys => CLOCK_SYS_OUT,
+		clk => CLOCK_SYS_OUT,
 		bt_3 => BT_3,
 		bt_5 => BT_5,
-		rd_dec2 => fio_rd_dec2,
 		rst_all => fio_rst_all,
 		ready_dec2 => fio_ready_dec2,
 		bus_dec2 => barramento_ula
@@ -209,11 +203,12 @@ begin
 	
 	-- ULA
 	compULA : ula port map (
-	   clk_sys => CLOCK_SYS_OUT,
-	   t1_in => fio_saida_t,
+	   t1_in => saida_tempo, -- fio_saida_t
 		t2_in => barramento_ula,
-		t_somado => barramento,
+		t_somado => fio_saida_t, -- barramento
+		rst_all => fio_rst_all,
 		carry => open,
+		ready_dec2 => fio_ready_dec2,
 		rd_ula => fio_rd_ula
 	);
 	
@@ -224,7 +219,7 @@ begin
 		wr_t => fio_wr_t,
 		rst_all => fio_rst_all,
 		bus_t_in => barramento,
-		t_out => fio_saida_t, -- Ligado no driver do LCD e na entrada 1 da ULA
+		t_out => saida_tempo, -- Ligado no driver do LCD e na entrada 1 da ULA fio_saida_t
 		op_t => fio_op_t,
 		fp_t => fio_fp_t
 	);
@@ -244,19 +239,19 @@ begin
 	
 	-- port map de debounce para os botoes
 	debounce_bt_start : debounce port map (
-	   clk => CLOCK,
+	   clk => CLOCK_SYS_OUT,
 		in_botao => BT_START,
 		resultado => fio_bt_start
 	);
 	
 	debounce_bt_cancel : debounce port map (
-	   clk => CLOCK,
+	   clk => CLOCK_SYS_OUT,
 		in_botao => BT_CANCEL,
 		resultado => fio_bt_cancel
 	);
 	
 	debounce_bt_stop : debounce port map (
-	   clk => CLOCK,
+	   clk => CLOCK_SYS_OUT,
 		in_botao => BT_STOP,
 		resultado => fio_bt_stop
 	);

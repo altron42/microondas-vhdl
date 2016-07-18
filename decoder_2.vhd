@@ -8,9 +8,7 @@ use work.constantes.all;
 entity decoder_2 is
    port (
 	   clk : in std_logic;
-		clk_sys : in std_logic;
 	   bt_3, bt_5 : in std_logic;
-		rd_dec2 : in std_logic;
 		rst_all : in std_logic;
 		ready_dec2 : buffer std_logic := '0';
 		bus_dec2 : out std_logic_vector (bus_max_width downto 0) := (others => 'Z')
@@ -21,7 +19,7 @@ architecture rtl_decoder2 of decoder_2 is
 
    component debounce
       generic(
-		   tamanho_contador : integer := 19);
+		   tamanho_contador : integer := 2);
       port (
          clk : in  std_logic; 
          in_botao : in  std_logic;
@@ -66,24 +64,6 @@ begin
 		x"0005" when selecao = "01" else
 		x"0000";
 	
-	compRegistrador : registrador port map (
-	   d => dados_tempo,
-		ld => sinal_bt_3 or sinal_bt_5,
-		rst => rst_all,
-		clk => clk_sys,
-		q => registrador_tempo
-	);
-	
-	process (clk_sys)
-	begin
-	   if rising_edge(clk_sys) then
-			ready_dec2 <= sinal_bt_3 or sinal_bt_5;
-		   if rd_dec2 = '1' then
-		      bus_dec2 <= registrador_tempo; -- ativa leitura do registrador
-		   else
-			   bus_dec2 <= (others => 'Z'); -- volta para estado de alta impedancia
-			end if;
-		end if;
-	end process;
+   bus_dec2 <= dados_tempo; -- ativa leitura do registrador
 	
 end rtl_decoder2;

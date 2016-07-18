@@ -4,7 +4,8 @@ use ieee.std_logic_unsigned.all;
 
 entity debounce is
    generic(
-      tamanho_contador  :  integer := 19); --Tamanho do Contador (19 bits duram cerca de 10.5ms em 50MHz de clock)
+      tamanho_contador  :  integer := 2 --Tamanho do Contador (3 bits = 8 iteracoes que duram cerca de 80ms em 100 Hz de clock)
+	);
    port (
       clk     : in  std_logic; 
       in_botao  : in  std_logic;  --Sinal de entrada do botão
@@ -23,11 +24,11 @@ begin
    process (clk)
    begin
       if rising_edge(clk) then
-         flipflops(0) <= not in_botao;
+         flipflops(0) <= not in_botao;   -- sinal de entrada
          flipflops(1) <= flipflops(0);
-         if (counter_set = '1') then                  --zera a contagem porque o sinal do botão está variando
+         if (counter_set = '1') then                  -- zera a contagem porque o sinal do botão está variando
             counter_out <= (others => '0');
-         elsif (counter_out(tamanho_contador) = '0') then --ruído do botão ainda ativo
+         elsif (counter_out(tamanho_contador) = '0') then -- ruído do botão ainda ativo
             counter_out <= counter_out + 1;
          else                                        --ruído do botão terminou
             resultado <= flipflops(1);

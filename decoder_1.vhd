@@ -8,7 +8,6 @@ use work.constantes.all;
 entity decoder_1 is
    port (
 	   clk : in std_logic;
-		clk_sys : in std_logic;
 	   bt_pip, bt_piz, bt_las : in std_logic;
 		rd_dec1 : in std_logic;
 		rst_all : in std_logic;
@@ -21,7 +20,7 @@ architecture rtl_decoder1 of decoder_1 is
 
    component debounce
       generic(
-		   tamanho_contador : integer := 19);
+		   tamanho_contador : integer := 2);
       port (
          clk : in  std_logic; 
          in_botao : in  std_logic;
@@ -77,13 +76,13 @@ begin
 	   d => dados_tempo,
 		ld => sinal_bt_pip or sinal_bt_piz or sinal_bt_las,
 		rst => rst_all,
-		clk => clk_sys,
+		clk => clk,
 		q => registrador_tempo
 	);
 	
-	process (clk_sys)
+	process (clk)
 	begin
-	   if rising_edge(clk_sys) then
+	   if rising_edge(clk) then
 			ready_dec1 <= sinal_bt_pip or sinal_bt_piz or sinal_bt_las;
 		   if rd_dec1 = '1' then
 		      bus_dec1 <= registrador_tempo; -- ativa leitura do registrador
