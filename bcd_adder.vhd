@@ -5,7 +5,6 @@ use ieee.numeric_std.all;
 
 entity bcd_adder is
    port(
-	   enable, load, rst: in std_logic;
       a, b  : in  std_logic_vector (3 downto 0); -- entradas.
       cin : in std_logic; -- carry in
 		estouro : in std_logic; -- indica se eh soma dos minutos
@@ -16,27 +15,19 @@ end bcd_adder;
 
 architecture funcionamento of bcd_adder is
 begin
-   process(rst, load, enable)
+   process(a, b, cin)
       variable soma_temp : std_logic_vector (4 downto 0);
    begin
-	   if rst = '1' then
-		   soma_temp := "00000";
-	   elsif load = '1' then
-		   soma_temp := ('0' & a) + ('0' & b) + ("0000" & cin);
-		end if;
-		if enable = '1' then
-			if estouro = '1' and soma_temp > 5 then
-				cout <= '1';
-				sum <= std_logic_vector(resize(unsigned(soma_temp + "01010"),4));
-			elsif (soma_temp > 9) then
-				cout <= '1';
-				sum <= std_logic_vector(resize(unsigned(soma_temp + "00110"),4));
-			else
-				cout <= '0';
-				sum <= soma_temp(3 downto 0);
-			end if;
+		soma_temp := ('0' & a) + ('0' & b) + ("0000" & cin);
+		if estouro = '1' and soma_temp > 5 then
+			cout <= '1';
+			sum <= std_logic_vector(resize(unsigned(soma_temp + "01010"),4));
+		elsif (soma_temp > 9) then
+			cout <= '1';
+			sum <= std_logic_vector(resize(unsigned(soma_temp + "00110"),4));
 		else
-			sum <= "ZZZZ";
+			cout <= '0';
+			sum <= soma_temp(3 downto 0);
 		end if;
    end process;
 end funcionamento;

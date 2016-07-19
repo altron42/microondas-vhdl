@@ -29,20 +29,18 @@ architecture rtl_decoder2 of decoder_2 is
 	
 	component registrador 
 	   port (
-			d   : in std_logic_vector (15 downto 0); -- dado
+			dt_i   : in std_logic_vector (15 downto 0); -- dado
 			ld  : in std_logic; -- enable
 			rst : in std_logic; -- reset assisncrono
 			clk : in std_logic; -- clock
-			q   : out std_logic_vector (15 downto 0) -- saida
+			dt_o   : out std_logic_vector (15 downto 0) -- saida
 		);
 	end component;
-
-	signal dados_tempo : std_logic_vector (bus_max_width downto 0) := x"0000";
-	shared variable registrador_tempo : std_logic_vector (bus_max_width downto 0);
 	
 	signal sinal_bt_3, sinal_bt_5 : std_logic;
 	
-	signal selecao : std_logic_vector (1 downto 0) := "00";
+	signal flag : std_logic := '0';
+	
 begin
    
 	bt3Debounce : debounce port map (
@@ -57,13 +55,34 @@ begin
 		resultado => sinal_bt_5
 	);
 	
-	selecao <= sinal_bt_3 & sinal_bt_5;
+	process (sinal_bt_3, sinal_bt_5)
+	begin
+	   if sinal_bt_3 = '0' or sinal_bt_5 = '0' then
+		   flag <= '0';
+		end if;
+	end process;
 	
-	dados_tempo <=
-	   x"0003" when selecao = "10" else
-		x"0005" when selecao = "01" else
-		x"0000";
-	
-   bus_dec2 <= dados_tempo; -- ativa leitura do registrador
+	process (clk, rst_all)
+	   variable dados_tempo : std_logic_vector (bus_max_width downto 0) := x"0000";
+		variable selecao : std_logic_vector (1 downto 0) := "00";
+	begin
+   	if rst_all = '1' then
+		   dados_tempo := (others => 'Z');
+		elsif rising_edge(clk) then
+		   if ready_dec2 = '1' then
+				ready_dec2 <= '0';
+			elsif sinal_bt_3 = '0' or sinal_bt_5 = '0' then
+			   flag <= '0';
+			else
+				selecao := sinal_bt_5 & sinal_bt_3;
+				case selecao is
+					when "10" => dados_tempo := x"0005"; ready_dec2 <= '1'; flag <= '1';
+					when "01" => dados_tempo := x"0003"; ready_dec2 <= '1'; flag <= '1';
+					when others => dados_tempo := (others => 'Z'); ready_dec2 <= '0';
+				end case;
+			end if;
+		end if;
+		bus_dec2 <= dados_tempo;
+	end process;
 	
 end rtl_decoder2;

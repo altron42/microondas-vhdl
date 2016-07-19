@@ -30,11 +30,11 @@ architecture rtl_decoder1 of decoder_1 is
 	
 	component registrador 
 	   port (
-			d   : in std_logic_vector (15 downto 0); -- dado
+			dt_i   : in std_logic_vector (15 downto 0); -- dado
 			ld  : in std_logic; -- enable
 			rst : in std_logic; -- reset assisncrono
 			clk : in std_logic; -- clock
-			q   : out std_logic_vector (15 downto 0) -- saida
+			dt_o   : out std_logic_vector (15 downto 0) -- saida
 		);
 	end component;
 
@@ -73,11 +73,11 @@ begin
 		x"0000";
 	
 	compRegistrador : registrador port map (
-	   d => dados_tempo,
+	   dt_i => dados_tempo,
 		ld => sinal_bt_pip or sinal_bt_piz or sinal_bt_las,
 		rst => rst_all,
 		clk => clk,
-		q => registrador_tempo
+		dt_o => registrador_tempo
 	);
 	
 	process (clk)

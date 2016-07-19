@@ -56,11 +56,11 @@ architecture microondas of forno is
 	
 	component ula
 	    port (
+		   clk : in std_logic;
 			t1_in, t2_in : in std_logic_vector (bus_max_width downto 0);
 			t_somado : out std_logic_vector (bus_max_width downto 0);
 			carry : out std_logic;
-			rst_all : in std_logic;
-			ready_dec2 : in std_logic;
+			rst, load : in std_logic;
 			rd_ula : in std_logic
 		);
 	end component;
@@ -203,12 +203,13 @@ begin
 	
 	-- ULA
 	compULA : ula port map (
-	   t1_in => saida_tempo, -- fio_saida_t
+	   clk => CLOCK_SYS_OUT,
+	   t1_in => fio_saida_t, -- fio_saida_t
 		t2_in => barramento_ula,
-		t_somado => fio_saida_t, -- barramento
-		rst_all => fio_rst_all,
+		t_somado => barramento, -- barramento
 		carry => open,
-		ready_dec2 => fio_ready_dec2,
+		rst => fio_rst_all,
+		load => fio_ready_dec2,
 		rd_ula => fio_rd_ula
 	);
 	
@@ -219,7 +220,7 @@ begin
 		wr_t => fio_wr_t,
 		rst_all => fio_rst_all,
 		bus_t_in => barramento,
-		t_out => saida_tempo, -- Ligado no driver do LCD e na entrada 1 da ULA fio_saida_t
+		t_out => fio_saida_t, -- Ligado no driver do LCD e na entrada 1 da ULA fio_saida_t
 		op_t => fio_op_t,
 		fp_t => fio_fp_t
 	);
