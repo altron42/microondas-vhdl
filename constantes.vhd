@@ -9,7 +9,12 @@ package constantes is
 	constant piz_time : std_logic_vector;
 	constant las_time : std_logic_vector;
 	
+	constant in_fclk : integer;
 	constant sys_clock_divider : integer;
+	constant out_fclk : integer;
+	
+	constant deb_fclk : integer;
+	constant deb_twindow : integer;
 	
 end constantes;
 
@@ -22,8 +27,11 @@ package body constantes is
 	constant piz_time : std_logic_vector (bus_max_width downto 0) := x"0014"; -- Tempo preprogramado do botao pizza
 	constant las_time : std_logic_vector (bus_max_width downto 0) := x"0103"; -- Tempo preprogramado do botao lasanha
 	
-	-- Fator de divisao para o clock sincronizado do sistema
-	-- Se dividir por 500000 o clock resultante sera 100 Hz
-	constant sys_clock_divider : integer := 5e5;  
+	constant in_fclk : integer := 50e6;   -- frequencia de clock da placa: 50 Mhz
+	constant sys_clock_divider : integer := 5e5;   -- fator divisor de frequencia
+	constant out_fclk : integer := infclk/sys_clock_divider;   -- frequencia resultante
+	
+	constant deb_fclk : integer := 100;
+	constant deb_twindow : integer := 10;
 	
 end constantes;
