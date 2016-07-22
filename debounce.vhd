@@ -5,10 +5,6 @@ use ieee.std_logic_unsigned.all;
 use work.constantes.all;
 
 entity debounce is
-   generic(
-	   fclk : integer := deb_fclk;   -- frequencia do clock
-      twindow : integer := deb_twindow   -- tamamnho da janela de clock que o sinal devera permanecer o mesmo para ser valido
-	);
    port (
 	   clk : in  std_logic; 
 	   x : in std_logic;
@@ -17,7 +13,7 @@ entity debounce is
 end debounce;
 
 architecture debouncer of debounce is
-   constant max : integer := fclk / twindow;
+   constant max : integer := deb_twindow;   -- tamamnho da janela de clock que o sinal devera permanecer o mesmo para ser valido;
 begin
    process (clk)
 	   variable count : integer range 0 to max;

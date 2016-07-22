@@ -75,11 +75,9 @@ begin
 	begin
 	   if rst = '1' then
 		   soma_registrada := x"0000";
-		elsif load = '1' then
-		   soma_registrada := soma_r;
 	   elsif rising_edge(clk) then
 		   if rd_ula = '1' then
-			   t_somado <= soma_registrada;
+			   t_somado <= soma_r;
 			else
 			   t_somado <= (others => 'Z');
 			end if;

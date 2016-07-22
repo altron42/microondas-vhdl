@@ -3,8 +3,10 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
 
+use work.constantes.all;
+
 entity decrementador_bcd is
-   generic ( clk_divider : integer := 50 );
+   generic ( clk_divider : integer := out_fclk/2 );
 	port (
 		clk, load, enable, rst : in std_logic;
 		estouro : in std_logic := '0';

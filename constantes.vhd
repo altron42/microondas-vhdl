@@ -13,7 +13,6 @@ package constantes is
 	constant sys_clock_divider : integer;
 	constant out_fclk : integer;
 	
-	constant deb_fclk : integer;
 	constant deb_twindow : integer;
 	
 end constantes;
@@ -29,9 +28,8 @@ package body constantes is
 	
 	constant in_fclk : integer := 50e6;   -- frequencia de clock da placa: 50 Mhz
 	constant sys_clock_divider : integer := 5e5;   -- fator divisor de frequencia
-	constant out_fclk : integer := infclk/sys_clock_divider;   -- frequencia resultante
+	constant out_fclk : integer := in_fclk/sys_clock_divider;   -- frequencia resultante
 	
-	constant deb_fclk : integer := 100;
-	constant deb_twindow : integer := 10;
+	constant deb_twindow : integer := 10;   -- quantidade de pulsos de clock
 	
 end constantes;

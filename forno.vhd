@@ -12,7 +12,7 @@ entity forno is
 		BT_PIP, BT_PIZ, BT_LAS : in std_logic;
 		BT_3, BT_5 : in std_logic;
 		SW_SENPORTA : in std_logic;
-		LED_ESPERA, LED_OPERANDO : out std_logic;
+		LED_ESPERA, LED_OPERANDO, LED_VALVULA : out std_logic;
 		LCD_DADOS : out std_logic_vector (7 downto 0);
 		LCD_RS, LCD_RW, LCD_E : out std_logic
 	);
@@ -23,7 +23,7 @@ architecture microondas of forno is
    component Controlador
 	   port (
 		   clk, bt_start, bt_cancel, bt_stop, sw_sp : in std_logic;
-			en_wait, en_lamp : out std_logic;
+			en_wait, en_lamp, en_valv : out std_logic;
 			ready_dec1,ready_dec2 : in std_logic;
 			rd_dec1 : out std_logic;
 			rd_ula : out std_logic := '0';
@@ -109,12 +109,10 @@ architecture microondas of forno is
 	end component;
 	
 	component debounce
-      generic(
-		   tamanho_contador : integer := 2);
       port (
          clk : in  std_logic; 
-         in_botao : in  std_logic;
-         resultado : out std_logic
+         x : in  std_logic;
+         y : buffer std_logic
 		);
    end component;
 	
@@ -169,6 +167,7 @@ begin
 		sw_sp => SW_SENPORTA,
 		en_wait => LED_ESPERA,
 		en_lamp => LED_OPERANDO, -- LED OPERANDO
+		en_valv => LED_VALVULA,
 		ready_dec1 => fio_ready_dec1,
 		ready_dec2 => fio_ready_dec2,
 		rd_dec1 => fio_rd_dec1,
@@ -241,20 +240,20 @@ begin
 	-- port map de debounce para os botoes
 	debounce_bt_start : debounce port map (
 	   clk => CLOCK_SYS_OUT,
-		in_botao => BT_START,
-		resultado => fio_bt_start
+		x => BT_START,
+		y => fio_bt_start
 	);
 	
 	debounce_bt_cancel : debounce port map (
 	   clk => CLOCK_SYS_OUT,
-		in_botao => BT_CANCEL,
-		resultado => fio_bt_cancel
+		x => BT_CANCEL,
+		y => fio_bt_cancel
 	);
 	
 	debounce_bt_stop : debounce port map (
 	   clk => CLOCK_SYS_OUT,
-		in_botao => BT_STOP,
-		resultado => fio_bt_stop
+		x => BT_STOP,
+		y => fio_bt_stop
 	);
 	
 end microondas;

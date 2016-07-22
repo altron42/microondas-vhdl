@@ -19,12 +19,10 @@ end decoder_1;
 architecture rtl_decoder1 of decoder_1 is
 
    component debounce
-      generic(
-		   tamanho_contador : integer := 2);
       port (
          clk : in  std_logic; 
-         in_botao : in  std_logic;
-         resultado : out std_logic
+         x : in  std_logic;
+         y : buffer std_logic
 		);
    end component;
 	
@@ -48,20 +46,20 @@ begin
    
 	pipDebounce : debounce port map (
 	   clk => clk,
-		in_botao => bt_pip,
-		resultado => sinal_bt_pip
+		x => bt_pip,
+		y => sinal_bt_pip
 	);
 	
 	pizDebounce : debounce port map (
 	   clk => clk,
-		in_botao => bt_piz,
-		resultado => sinal_bt_piz
+		x => bt_piz,
+		y => sinal_bt_piz
 	);
 	
 	lasDebounce : debounce port map (
 	   clk => clk,
-		in_botao => bt_las,
-		resultado => sinal_bt_las
+		x => bt_las,
+		y => sinal_bt_las
 	);
 	
 	selecao <= sinal_bt_pip & sinal_bt_piz & sinal_bt_las;
