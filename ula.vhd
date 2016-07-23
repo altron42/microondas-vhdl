@@ -70,14 +70,16 @@ begin
 		sum => soma_r(15 downto 12)
 	);
 	
-	process (clk, rst, load)
-	   variable soma_registrada : std_logic_vector (bus_max_width downto 0);
+	process (clk, rst)
+	   variable soma_registrada : std_logic_vector (15 downto 0);
 	begin
 	   if rst = '1' then
 		   soma_registrada := x"0000";
-	   elsif rising_edge(clk) then
-		   if rd_ula = '1' then
-			   t_somado <= soma_r;
+	   elsif falling_edge(clk) then
+		   if load = '1' then
+			   soma_registrada := soma_r;
+		   elsif rd_ula = '1' then
+			   t_somado <= soma_registrada;
 			else
 			   t_somado <= (others => 'Z');
 			end if;
