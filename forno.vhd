@@ -12,6 +12,8 @@ entity forno is
 		BT_PIP, BT_PIZ, BT_LAS : in std_logic;
 		BT_3, BT_5 : in std_logic;
 		SW_SENPORTA : in std_logic;
+		KB_LINHA : buffer std_logic_vector (3 downto 0);
+		KB_COLUNA : in std_logic_vector (3 downto 0);
 		LED_ESPERA, LED_OPERANDO, LED_VALVULA : out std_logic;
 		LCD_DADOS : out std_logic_vector (7 downto 0);
 		LCD_RS, LCD_RW, LCD_E : out std_logic
@@ -24,9 +26,10 @@ architecture microondas of forno is
 	   port (
 		   clk, bt_start, bt_cancel, bt_stop, sw_sp : in std_logic;
 			en_wait, en_lamp, en_valv : out std_logic;
-			ready_dec1,ready_dec2 : in std_logic;
+			dav_dec1, dav_dec2, dav_kb : in std_logic;
 			rd_dec1 : out std_logic;
 			rd_ula : out std_logic := '0';
+			rd_kb : out std_logic := '0';
 			op_t, fp_t : in std_logic;
 			wr_t, ce_t : out std_logic;
 			rst_all : out std_logic
@@ -39,7 +42,7 @@ architecture microondas of forno is
 			bt_pip, bt_piz, bt_las : in std_logic;
 			rd_dec1 : in std_logic;
 			rst_all : in std_logic;
-			ready_dec1 : buffer std_logic := '0';
+			dav_dec1 : buffer std_logic := '0';
 			bus_dec1 : out std_logic_vector (bus_max_width downto 0)
 		);
 	end component;
@@ -49,9 +52,20 @@ architecture microondas of forno is
 		   clk : in std_logic;
 			bt_3, bt_5 : in std_logic;
 			rst_all : in std_logic;
-			ready_dec2 : buffer std_logic := '0';
+			dav_dec2 : buffer std_logic := '0';
 			bus_dec2 : out std_logic_vector (bus_max_width downto 0)
 		);
+	end component;
+	
+	component Controlador_Teclado is
+		port (
+			  clock : in std_logic;
+			  coluna : in std_logic_vector (3 downto 0);
+			  linha : buffer std_logic_vector (3 downto 0);
+			  rd_kb : std_logic;
+			  dav_kb : out std_logic;
+			  cod_out : out std_logic_vector (15 downto 0)
+	   );
 	end component;
 	
 	component ula
@@ -122,10 +136,13 @@ architecture microondas of forno is
 	signal fio_caracter_lcd: character;
 	
 	-- sinais de controle do decodificador 1
-	signal fio_ready_dec1, fio_rd_dec1 : std_logic;
+	signal fio_dav_dec1, fio_rd_dec1 : std_logic;
 	
 	-- sinais de controle do decodificador 2
-	signal fio_ready_dec2 : std_logic;
+	signal fio_dav_dec2 : std_logic;
+	
+	-- sinais de controle do teclado
+	signal fio_dav_kb, fio_rd_kb : std_logic;
 	
 	-- sinais de controle dos botoes
 	signal fio_bt_start, fio_bt_cancel, fio_bt_stop : std_logic;
@@ -168,10 +185,12 @@ begin
 		en_wait => LED_ESPERA,
 		en_lamp => LED_OPERANDO, -- LED OPERANDO
 		en_valv => LED_VALVULA,
-		ready_dec1 => fio_ready_dec1,
-		ready_dec2 => fio_ready_dec2,
+		dav_dec1 => fio_dav_dec1,
+		dav_dec2 => fio_dav_dec2,
+		dav_kb => fio_dav_kb,
 		rd_dec1 => fio_rd_dec1,
 		rd_ula => fio_rd_ula,
+		rd_kb => fio_rd_kb,
 		op_t => fio_op_t,
 		fp_t => fio_fp_t,
 		wr_t => fio_wr_t,
@@ -184,7 +203,7 @@ begin
 	   bt_pip => BT_PIP,
 		bt_piz => BT_PIZ,
 		bt_las => BT_LAS,
-		ready_dec1 => fio_ready_dec1, -- fio_ready_dec1
+		dav_dec1 => fio_dav_dec1, -- fio_dav_dec1
 		rst_all => fio_rst_all,
 		rd_dec1 => fio_rd_dec1,
 		bus_dec1 => barramento
@@ -196,8 +215,18 @@ begin
 		bt_3 => BT_3,
 		bt_5 => BT_5,
 		rst_all => fio_rst_all,
-		ready_dec2 => fio_ready_dec2,
+		dav_dec2 => fio_dav_dec2,
 		bus_dec2 => barramento_ula
+	);
+	
+	-- TECLADO
+	compTeclado : Controlador_Teclado port map (
+	   clock => CLOCK_SYS_OUT,
+	   coluna => KB_COLUNA,
+	   linha => KB_LINHA,
+	   rd_kb => fio_rd_kb,
+	   dav_kb => fio_dav_kb,
+	   cod_out => barramento
 	);
 	
 	-- ULA
@@ -208,7 +237,7 @@ begin
 		t_somado => barramento, -- barramento
 		carry => open,
 		rst => fio_rst_all,
-		load => fio_ready_dec2,
+		load => fio_dav_dec2,
 		rd_ula => fio_rd_ula
 	);
 	
