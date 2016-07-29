@@ -11,7 +11,7 @@ entity decoder_1 is
 	   bt_pip, bt_piz, bt_las : in std_logic;
 		rd_dec1 : in std_logic;
 		rst_all : in std_logic;
-		ready_dec1 : buffer std_logic := '0';
+		dav_dec1 : buffer std_logic := '0';
 		bus_dec1 : out std_logic_vector (bus_max_width downto 0) := (others => 'Z')
 	);
 end decoder_1;
@@ -81,7 +81,7 @@ begin
 	process (clk)
 	begin
 	   if rising_edge(clk) then
-			ready_dec1 <= sinal_bt_pip or sinal_bt_piz or sinal_bt_las;
+			dav_dec1 <= sinal_bt_pip or sinal_bt_piz or sinal_bt_las;
 		   if rd_dec1 = '1' then
 		      bus_dec1 <= registrador_tempo; -- ativa leitura do registrador
 		   else
